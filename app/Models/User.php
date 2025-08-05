@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'illness',
     ];
 
     /**
@@ -45,4 +47,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function notes()
+{
+    return $this->hasMany(\App\Models\Note::class);
+}
 }
