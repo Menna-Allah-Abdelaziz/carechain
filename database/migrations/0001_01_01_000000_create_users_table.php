@@ -17,15 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-           
+            $table->string('role')->default('patient'); // ← أضفناها هنا مباشرة
+            $table->string('family_code')->nullable(); // ← وأضفنا دي كمان
             $table->rememberToken();
             $table->timestamps();
-            if (!Schema::hasColumn('users', 'role')) {
-    Schema::table('users', function (Blueprint $table) {
-        $table->string('role')->default('patient');
-    });
-}
-
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -41,8 +36,6 @@ return new class extends Migration
             $table->text('user_agent')->nullable();
             $table->longText('payload');
             $table->integer('last_activity')->index();
-            $table->string('role')->default('patient');
-
         });
     }
 
@@ -56,3 +49,4 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
     }
 };
+
