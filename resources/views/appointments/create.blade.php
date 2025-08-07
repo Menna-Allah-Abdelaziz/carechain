@@ -26,12 +26,7 @@
             <label for="doctor_name" class="form-label">Doctor Name</label>
             <input type="text" name="doctor_name" class="form-control" required>
         </div>
-
-        <div class="mb-3">
-            <label for="family_code" class="form-label">Family ID</label>
-            <input type="number" name="family_code" class="form-control" required>
-        </div>
-
+        
         <div class="mb-3">
             <label for="appointment_time" class="form-label">Appointment Time</label>
             <input type="datetime-local" name="appointment_time" class="form-control" required>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\Appointment;
 use App\Models\User;
 use App\Notifications\AppointmentReminder;
@@ -31,21 +32,18 @@ public function store(Request $request)
 {
     $validated = $request->validate([
         'doctor_name' => 'required|string|max:255',
-        'family_code' => 'required|exists:users,id',
         'appointment_time' => 'required|date',
         'location' => 'nullable|string|max:255',
         'notes' => 'nullable|string',
     ]);
 
-    $appointment = Appointment::create($validated);
+    $validated['family_code'] = auth()->user()->family_code;
 
-    $user = User::find($appointment->family_code);
-    if ($user) {
-        $user->notify(new AppointmentReminder($appointment->appointment_time));
-    }
+    Appointment::create($validated);
 
-    return redirect()->back()->with('success', 'Appointment added and email sent successfully!');
+    return redirect()->route('appointments.index')->with('success', 'Appointment created successfully.');
 }
+
 
 }
 
