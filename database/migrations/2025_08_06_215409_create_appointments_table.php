@@ -15,8 +15,8 @@ return new class extends Migration
 
             $table->string('doctor_name');
 
-            $table->unsignedBigInteger('family_code');
-            $table->foreign('family_code')->references('id')->on('users')->onDelete('cascade');
+           $table->string('family_code');
+           $table->foreign('family_code')->references('family_code')->on('users')->onDelete('cascade');
 
             $table->dateTime('appointment_time');
             $table->string('location')->nullable();
