@@ -12,16 +12,11 @@ return new class extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-
             $table->string('doctor_name');
-
-           $table->string('family_code');
-           $table->foreign('family_code')->references('family_code')->on('users')->onDelete('cascade');
-
+            $table->string('family_code');
             $table->dateTime('appointment_time');
             $table->string('location')->nullable();
             $table->text('notes')->nullable();
-
             $table->timestamps();
         });
     }
