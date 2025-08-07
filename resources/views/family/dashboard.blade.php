@@ -21,9 +21,16 @@
             </p>
         </div>
     </div>
-<a href="{{ route('medications.index') }}" class="btn btn-outline-primary btn-lg my-4">
-    View Medications
-</a>
+<div class="d-flex gap-3 my-4">
+    <a href="{{ route('medications.index') }}" class="btn btn-outline-primary btn-lg">
+        View Medications
+    </a>
+
+    <a href="{{ route('appointments.index') }}" class="btn btn-outline-secondary btn-lg">
+        View Appointments
+    </a>
+</div>
+
 
 
     <!-- Notes -->
