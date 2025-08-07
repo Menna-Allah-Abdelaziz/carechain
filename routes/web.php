@@ -7,6 +7,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\MedicationController;
+use App\Http\Controllers\AppointmentController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -27,4 +29,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/family/medications', [MedicationController::class, 'index'])->name('medications.index');
     Route::post('/family/medications', [MedicationController::class, 'store'])->name('medications.store');
+
+    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
+    Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
 });
