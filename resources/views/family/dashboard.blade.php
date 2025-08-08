@@ -29,7 +29,15 @@
     <a href="{{ route('appointments.index') }}" class="btn btn-outline-secondary btn-lg">
         View Appointments
     </a>
-</div>
+     <!-- 76 -->
+<!-- <a href="{{ route('medical_files.create') }}" class="btn btn-outline-primary btn-lg">
+    Upload Medical File
+</a> -->
+<!-- <a href="{{ route('medical_files.create', ['family_code' => $familyCode]) }}">View Uploads</a> -->
+<a href="{{ route('medical_files.create', ['family_code' => $patient->family_code]) }}">
+    <button>Uploaded File</button>
+</a>
+    </div>
 
 
 
