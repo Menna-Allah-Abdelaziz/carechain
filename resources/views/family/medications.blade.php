@@ -4,9 +4,7 @@
 <div class="container py-5 px-4">
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Medications</h2>
-    <a href="{{ route('family.dashboard') }}" class="btn btn-primary">
-        ← Back to Dashboard
-    </a>
+   
 </div>
 <div>
     @if(session('success'))

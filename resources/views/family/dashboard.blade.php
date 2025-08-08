@@ -2,13 +2,10 @@
 
 @section('content')
 <div class="container py-5">
-    <div class="text-center mb-4">
-        <h1 class="display-5 text-primary fw-bold">Family Dashboard</h1>
-        <p class="text-muted">Stay connected with your family members</p>
-    </div>
+    
 
     <!-- User Info -->
-    <div class="card shadow-sm border-0 mb-5">
+  <!---  <div class="card shadow-sm border-0 mb-5">
         <div class="card-body">
             <h4 class="mb-3">Welcome, <span class="text-success">{{ auth()->user()->name }}</span></h4>
             <p><strong>Role:</strong> {{ ucfirst(auth()->user()->role) }}</p>
@@ -20,7 +17,29 @@
                 @endif
             </p>
         </div>
+    </div>--->
+    <div class="card shadow-sm border-0 mb-5">
+    <div class="card-body d-flex align-items-center gap-5" style="font-size: 1.8rem;">
+        <div>
+            <span class="text-success">{{ auth()->user()->name }}</span>
+        </div>
+        <div>
+            {{ ucfirst(auth()->user()->role) }}
+        </div>
+        <div>
+            @if(auth()->user()->family_code)
+                <code>{{ auth()->user()->family_code }}</code>
+            @else
+                <span class="text-danger">Not Assigned</span>
+            @endif
+        </div>
     </div>
+</div>
+<div class="text-center mb-4">
+        <h1 class="display-5 text-primary fw-bold">Family Dashboard</h1>
+        <p class="text-muted">Stay connected with your family members</p>
+    </div>
+    <!--
 <div class="d-flex gap-3 my-4">
     <a href="{{ route('medications.index') }}" class="btn btn-outline-primary btn-lg">
         View Medications
@@ -28,16 +47,16 @@
 
     <a href="{{ route('appointments.index') }}" class="btn btn-outline-secondary btn-lg">
         View Appointments
-    </a>
+    </a>-->
      <!-- 76 -->
 <!-- <a href="{{ route('medical_files.create') }}" class="btn btn-outline-primary btn-lg">
     Upload Medical File
 </a> -->
-<!-- <a href="{{ route('medical_files.create', ['family_code' => $familyCode]) }}">View Uploads</a> -->
-<a href="{{ route('medical_files.create', ['family_code' => $patient->family_code]) }}">
-    <button>Uploaded File</button>
+<!--
+<a href="{{ route('medical_files.create', ['family_code' =>Auth::user()->family_code]) }}"class="btn btn-outline-primary btn-lg">
+   Uploaded File
 </a>
-    </div>
+    </div>-->
 
 
 

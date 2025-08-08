@@ -20,7 +20,21 @@
     body {
         direction: ltr;
         text-align: left;
+     font-size: 22px; 
     }
+    
+.navbar-nav .nav-link {
+    color: black; /* اللون العادي */
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #007bff !important; /* لون أزرق لما تمرر الماوس */
+    font-weight: bold; /* عشان يبقى واضح أكتر */
+}
+
+
+
 </style>
 <body>
     <div id="app">
@@ -40,6 +54,9 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         @auth
+                         <li class="nav-item">
+                                <a class="nav-link" href="{{ route('family.dashboard') }}">Notes</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('appointments.index') }}">Appointments</a>
                             </li>
@@ -49,6 +66,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('medical-files.index') }}">Uploaded Files</a>
                             </li>
+                            
                         @endauth
                     </ul>
 
