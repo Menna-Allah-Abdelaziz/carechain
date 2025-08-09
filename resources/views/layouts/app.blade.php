@@ -63,10 +63,13 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('medications.index') }}">Medications</a>
                             </li>
-                            <li class="nav-item">
+                           <!--- <li class="nav-item">
                                 <a class="nav-link" href="{{ route('medical-files.index') }}">Uploaded Files</a>
+                            </li>-->
+                            <li class ="nav-item">
+                                <a class="nav-link"  href="{{ route('medical_files.create', ['family_code' =>Auth::user()->family_code]) }}">
+   Uploaded File</a>
                             </li>
-                            
                         @endauth
                     </ul>
 
