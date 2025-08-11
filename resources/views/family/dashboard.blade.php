@@ -2,65 +2,60 @@
 
 @section('content')
 <div class="container py-5">
-    
 
-    <!-- User Info -->
-  <!---  <div class="card shadow-sm border-0 mb-5">
-        <div class="card-body">
-            <h4 class="mb-3">Welcome, <span class="text-success">{{ auth()->user()->name }}</span></h4>
-            <p><strong>Role:</strong> {{ ucfirst(auth()->user()->role) }}</p>
-            <p><strong>Family Code:</strong> 
-                @if(auth()->user()->family_code)
-                    <code>{{ auth()->user()->family_code }}</code>
+    <!-- Patient Info -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-body d-flex align-items-center gap-5" style="font-size: 1.8rem;">
+            <div>
+                <span class="text-success">{{ $patient->name }}</span>
+            </div>
+            <div>
+                {{ ucfirst($patient->role) }}
+            </div>
+            <div>
+                @if($patient->family_code)
+                    <code>{{ $patient->family_code }}</code>
                 @else
                     <span class="text-danger">Not Assigned</span>
                 @endif
-            </p>
-        </div>
-    </div>--->
-    <div class="card shadow-sm border-0 mb-5">
-    <div class="card-body d-flex align-items-center gap-5" style="font-size: 1.8rem;">
-        <div>
-            <span class="text-success">{{ auth()->user()->name }}</span>
-        </div>
-        <div>
-            {{ ucfirst(auth()->user()->role) }}
-        </div>
-        <div>
-            @if(auth()->user()->family_code)
-                <code>{{ auth()->user()->family_code }}</code>
-            @else
-                <span class="text-danger">Not Assigned</span>
-            @endif
+            </div>
         </div>
     </div>
-</div>
-<div class="text-center mb-4">
+
+
+
+
+
+@if(auth()->user()->role === 'caregiver')
+    <div class="d-flex gap-3 mt-4">
+        <a href="{{ route('medications.index', ['patient_id' => $patient->id]) }}" class="btn btn-primary">
+            عرض الأدوية
+        </a>
+        <!-- زرار المواعيد -->
+    <a href="{{ route('appointments.patient.index', $patient->id) }}">عرض مواعيد {{ $patient->name }}</a>
+
+
+    </div>
+@endif
+
+@if(auth()->user()->role === 'caregiver' && isset($patient))
+  <a href="{{ route('appointments.index', ['patient_id' => $patient->id]) }}" class="btn btn-info">
+    Appointments
+  </a>
+
+@endif
+
+
+
+
+
+    <!-- Dashboard Title -->
+    <div class="text-center mb-4">
         <h1 class="display-5 text-primary fw-bold">Family Dashboard</h1>
         <p class="text-muted">Stay connected with your family members</p>
     </div>
-    <!--
-<div class="d-flex gap-3 my-4">
-    <a href="{{ route('medications.index') }}" class="btn btn-outline-primary btn-lg">
-        View Medications
-    </a>
 
-    <a href="{{ route('appointments.index') }}" class="btn btn-outline-secondary btn-lg">
-        View Appointments
-    </a>-->
-     <!-- 76 -->
-<!-- <a href="{{ route('medical_files.create') }}" class="btn btn-outline-primary btn-lg">
-    Upload Medical File
-</a> -->
-<!--
-<a href="{{ route('medical_files.create', ['family_code' =>Auth::user()->family_code]) }}"class="btn btn-outline-primary btn-lg">
-   Uploaded File
-</a>
-    </div>-->
-
-
-
-    <!-- Notes -->
+    <!-- Notes Section -->
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">📝 Notes</h5>
@@ -72,8 +67,10 @@
             @endif
 
             <!-- Add Note Form -->
-            <form action="{{ route('notes.store') }}" method="POST" class="mb-4">
+<form action="{{ route('notes.store', $patient->id) }}" method="POST">
+
                 @csrf
+                <input type="hidden" name="patient_id" value="{{ $patient->id }}">
                 <div class="mb-3">
                     <label for="note" class="form-label">Write a Note</label>
                     <textarea name="content" id="note" class="form-control" rows="3" required placeholder="Type your message here..."></textarea>
@@ -83,24 +80,38 @@
                 </button>
             </form>
 
-            <!-- Notes List -->
+@if($notes->count())
+    <ul>
+        @foreach($notes as $note)
+            <li>
+                <strong>{{ $note->user->name }}</strong>: {{ $note->content }}
+                <small>{{ $note->created_at->format('Y-m-d H:i') }}</small>
+            </li>
+        @endforeach
+    </ul>
+@else
+    <p>No notes found.</p>
+@endif
+
+
+<!--
+            
             @if(isset($notes) && $notes->count())
                 <ul class="list-group">
                     @foreach($notes as $note)
                         <li class="list-group-item">
- <strong>{{ $note->user->name }}</strong>: {{ $note->content }}
-
-    <div class="text-muted small">
-        Created: {{ $note->created_at->format('Y-m-d H:i') }}
-    </div>
-</li>
-
+                            <strong>{{ $note->user->name }}</strong>: {{ $note->content }}
+                            <div class="text-muted small">
+                                Created: {{ $note->created_at->format('Y-m-d H:i') }}
+                            </div>
+                        </li>
                     @endforeach
                 </ul>
             @else
                 <p class="text-muted">No notes yet.</p>
-            @endif
+            @endif  -->
         </div>
     </div>
+
 </div>
 @endsection

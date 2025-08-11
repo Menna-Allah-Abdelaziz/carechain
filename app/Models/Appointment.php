@@ -11,14 +11,20 @@ class Appointment extends Model
 
     protected $table = 'appointments';
 
-    protected $fillable = [
+    
+protected $fillable = [
         'doctor_name',
         'family_code',
+        'patient_id',       // جديد
         'appointment_time',
         'location',
         'notes',
     ];
 
+    public function patient()
+    {
+        return $this->belongsTo(User::class, 'patient_id');
+    }
     public function user()
     {
                 return $this->belongsTo(User::class, 'family_code', 'family_code');

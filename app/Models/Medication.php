@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Medication extends Model
 {
     use HasFactory;
+public function user()
+{
+    return $this->belongsTo(User::class, 'created_by');
+}
 
     protected $fillable = [
         'family_code',
@@ -16,6 +20,7 @@ class Medication extends Model
         'quantity',
         'times_per_day',
         'first_dose_time',
+        'created_by', 
     ];
 }
 

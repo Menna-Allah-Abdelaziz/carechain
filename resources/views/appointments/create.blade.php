@@ -19,9 +19,18 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form method="POST" action="{{ route('appointments.store') }}">
-        @csrf
 
+
+<form method="POST" action="{{ route('appointments.store') }}">
+    @csrf
+
+    @if(auth()->user()->role === 'caregiver' && isset($patient))
+        <input type="hidden" name="patient_id" value="{{ $patient->id }}">
+    @endif
+
+
+
+    
         <div class="mb-3">
             <label for="doctor_name" class="form-label">Doctor Name</label>
             <input type="text" name="doctor_name" class="form-control" required>

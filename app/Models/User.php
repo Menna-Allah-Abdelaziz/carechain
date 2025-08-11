@@ -47,6 +47,28 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+// في App\Models\User.php
+
+public function caregivers()
+{
+    return $this->belongsToMany(
+        User::class,
+        'patient_caregiver',
+        'patient_id',
+        'caregiver_id'
+    );
+}
+
+public function patients()
+{
+    return $this->belongsToMany(
+        User::class,
+        'patient_caregiver',
+        'caregiver_id',
+        'patient_id'
+    );
+}
+
 
 public function notes()
 {

@@ -10,15 +10,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('appointments', function (Blueprint $table) {
-            $table->id();
-            $table->string('doctor_name');
-            $table->string('family_code');
-            $table->dateTime('appointment_time');
-            $table->string('location')->nullable();
-            $table->text('notes')->nullable();
-            $table->timestamps();
-        });
+       
+
+// database/migrations/xxxx_xx_xx_create_appointments_table.php
+
+Schema::create('appointments', function (Blueprint $table) {
+    $table->id();
+    $table->string('doctor_name');
+    $table->string('family_code');
+    $table->foreignId('patient_id')->constrained('users')->onDelete('cascade');  // جديد
+    $table->dateTime('appointment_time');
+    $table->string('location')->nullable();
+    $table->text('notes')->nullable();
+    $table->timestamps();
+});
+
+
     }
 
     /**
