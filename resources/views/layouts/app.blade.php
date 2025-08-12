@@ -84,7 +84,7 @@
                                 <a class="nav-link" href="{{ route('appointments.index') }}">Appointments</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{route('medical_files.create')}}">Medical Files</a>
+                                <a class="nav-link" href="{{ route('medical_files.create', ['patient' => auth()->id()]) }}">Medical Files</a>
                             </li>
                             @elseif(auth()->user()->role === 'caregiver')
                             <li class="nav-item">

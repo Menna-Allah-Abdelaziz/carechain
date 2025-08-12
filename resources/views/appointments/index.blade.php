@@ -13,7 +13,9 @@
         Add Appointment
     </a>
 @endif
-
+<a href="{{ route('family.dashboard.patient', $patient->id) }}" class="btn btn-primary">
+    View Dashboard
+</a>
 <style>
 
     .btn-custom-white {

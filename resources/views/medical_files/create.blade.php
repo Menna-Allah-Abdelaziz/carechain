@@ -3,16 +3,27 @@
 @section('content')
 <div class="container">
     <h2 class="mb-4">Upload Medical File</h2>
-
-    {{-- رسالة النجاح --}}
+<a href="{{ route('family.dashboard.patient', $patient->id) }}" class="btn btn-primary">
+    View Dashboard
+</a>
+    {{-- Success message --}}
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
     @endif
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+    </div>
+@endif
 
-    {{-- فورم رفع الملف --}}
-    <form action="{{ route('medical_files.store') }}" method="POST" enctype="multipart/form-data" class="mb-5">
+    {{-- Upload form --}}
+    <form action="{{ route('medical_files.store', ['patient' => $patient->id]) }}" method="POST" enctype="multipart/form-data" class="mb-5">
         @csrf
 
         <div class="mb-3">
@@ -22,40 +33,34 @@
 
         <div class="mb-3">
             <label for="file_type" class="form-label">File Type</label>
-            <input type="text" name="file_type" class="form-control" required>
+            <input type="text" name="file_type" class="form-control" placeholder="e.g. Blood Test, X-Ray">
         </div>
 
         <div class="mb-3">
             <label for="note" class="form-label">Note</label>
-            <textarea name="note" class="form-control" rows="2"></textarea>
+            <textarea name="note" class="form-control" rows="2" placeholder="Any additional info..."></textarea>
         </div>
 
-        <input type="hidden" name="family_code" value="{{ $familyCode }}">
+        <input type="hidden" name="patient_id" value="{{ $patient->id }}">
 
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
 
-    {{-- قائمة الملفات المرفوعة --}}
-    @if(count($medicalFiles))
-        <h3 class="mb-3">Uploaded Files</h3>
-
-        <div class="row row-cols-1 row-cols-md-2 g-4">
+    {{-- Uploaded files list --}}
+    @if($medicalFiles->count() > 0)
+        <h4>Uploaded Files</h4>
+        <ul class="list-group">
             @foreach($medicalFiles as $file)
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">File Type: {{ $file->file_type }}</h5>
-                            <p class="card-text">Note: {{ $file->note }}</p>
-                            <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                View File
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank">
+                        {{ $file->file_type ?? 'Unknown file type' }}
+                    </a>
+                    <span class="badge bg-secondary">{{ $file->note ?? 'No notes' }}</span>
+                </li>
             @endforeach
-        </div>
-    @else 
-    <h3>no files</h3>
+        </ul>
+    @else
+        <p>No files uploaded yet.</p>
     @endif
 </div>
 @endsection

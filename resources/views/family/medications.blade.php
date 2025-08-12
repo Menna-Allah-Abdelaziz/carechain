@@ -11,6 +11,9 @@
                 You
             @endif
         </h2>
+        <a href="{{ route('family.dashboard.patient', $patient->id) }}" class="btn btn-primary">
+    View Dashboard
+</a>
     </div>
 
     @if(session('success'))
@@ -289,4 +292,3 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 @endsection
-C:\Users\hp\OneDrive\Desktop\carechain\database/migrations

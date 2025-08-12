@@ -59,10 +59,29 @@ Route::post('/medications/store', [MedicationController::class, 'store'])
     Route::delete('/family/medications/{medication}', [MedicationController::class, 'destroy'])->name('medications.destroy');
 
 
-    Route::get('/medical-files', [MedicalFileController::class, 'index'])->name('medical-files.index');
-    Route::get('/medical-files/create', [MedicalFileController::class, 'create'])->name('medical_files.create');
-    Route::post('/medical-files/store', [MedicalFileController::class, 'store'])->name('medical_files.store');
+     Route::get('/patients/{patient}/medical_files', [MedicalFileController::class, 'index'])
+        ->name('medical_files.index');
 
+    Route::get('/patients/{patient}/medical_files/create', [MedicalFileController::class, 'create'])
+        ->name('medical_files.create');
+
+    Route::post('/patients/{patient}/medical_files', [MedicalFileController::class, 'store'])
+        ->name('medical_files.store');
+
+    // حذف / عرض / تعديل ملف مفرد نستخدم id للملف (shallow)
+    Route::get('/medical_files/{medical_file}', [MedicalFileController::class, 'show'])
+        ->name('medical_files.show');
+
+    Route::delete('/medical_files/{medical_file}', [MedicalFileController::class, 'destroy'])
+        ->name('medical_files.destroy');
+
+    // لو عايزة edit/update:
+    Route::get('/medical_files/{medical_file}/edit', [MedicalFileController::class, 'edit'])
+        ->name('medical_files.edit');
+Route::get('/medical_files/{familyCode}', [MedicalFileController::class, 'showMedicalFiles']);
+
+    Route::put('/medical_files/{medical_file}', [MedicalFileController::class, 'update'])
+        ->name('medical_files.update');
     Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
     Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
