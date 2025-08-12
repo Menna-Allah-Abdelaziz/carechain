@@ -11,6 +11,9 @@
                 You
             @endif
         </h2>
+        <a href="{{ route('family.dashboard.patient', $patient->id) }}" class="btn btn-primary">
+    View Dashboard
+</a>
     </div>
 
     @if(session('success'))

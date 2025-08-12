@@ -31,6 +31,23 @@
 
             </div>
             @endif
+
+@if(auth()->user()->role === 'caregiver')
+    <div class="d-flex  mt-4">
+        <a href="{{ route('medications.index', ['patient_id' => $patient->id]) }}" class="btn btn-primary mx-3 px-3 py-2 fs-5">
+           Medications
+        </a>
+        <!-- زرار المواعيد -->
+<a href="{{ route('appointments.index', ['patient_id' => $patient->id]) }}" class="btn btn-secondary mx-3 px-3 py-2 fs-5">
+    Appointments
+  </a>
+  <a href="{{ route('medical_files.create', ['patient' => $patient->id]) }}"class="btn btn-primary mx-3 px-3 py-2 fs-5">
+Medical Files
+</a>
+
+    </div>
+   
+@endif
         </div>
     </div>
 

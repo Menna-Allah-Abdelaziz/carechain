@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
@@ -8,41 +9,48 @@ use Illuminate\Http\Request;
 
 class AppointmentController extends Controller
 {
+    // Display list of appointments
     public function index(Request $request)
     {
         $user = auth()->user();
 
         if ($user->role === 'caregiver' && $request->patient_id) {
+            // If caregiver, get the patient by ID and role check
             $patient = User::where('id', $request->patient_id)
                            ->where('role', 'patient')
                            ->firstOrFail();
 
+            // Check if caregiver is linked to this patient
             if (!$user->patients()->where('users.id', $patient->id)->exists()) {
                 abort(403, 'Unauthorized');
             }
 
             $familyCode = $patient->family_code;
         } else {
+            // If patient, set $patient as current user
             $patient = $user->role === 'patient' ? $user : null;
             $familyCode = $user->family_code;
         }
 
+        // Get all appointments by family_code
         $appointments = Appointment::where('family_code', $familyCode)->get();
 
         return view('appointments.index', compact('appointments', 'patient'));
     }
 
+    // Show the form to create a new appointment
     public function create(Request $request)
     {
         $user = auth()->user();
         $patient = null;
 
         if ($user->role === 'caregiver' && $request->patient_id) {
+            // Get patient if caregiver and patient_id provided
             $patient = User::where('users.id', $request->patient_id)
                            ->where('role', 'patient')
                            ->firstOrFail();
 
-            // تأكد أن المتابع مرتبط بالمريض
+            // Verify caregiver is linked to patient
             if (!$user->patients()->where('users.id', $patient->id)->exists()) {
                 abort(403, 'Unauthorized');
             }
@@ -51,10 +59,12 @@ class AppointmentController extends Controller
         return view('appointments.create', compact('patient'));
     }
 
+    // Store a new appointment
     public function store(Request $request)
     {
         $user = auth()->user();
 
+        // Validation rules depend on user role
         if ($user->role === 'caregiver') {
             $rules = [
                 'doctor_name' => 'required|string|max:255',
@@ -77,38 +87,39 @@ class AppointmentController extends Controller
         if ($user->role === 'caregiver') {
             $patient = User::findOrFail($request->patient_id);
 
+            // Confirm caregiver linked to patient
             if (!$user->patients()->where('users.id', $patient->id)->exists()) {
                 abort(403, 'Unauthorized');
             }
 
             $familyCode = $patient->family_code;
-            $validated['patient_id'] = $patient->id;   // حفظ patient_id
+            $validated['patient_id'] = $patient->id;   // assign patient id
         } else {
             $familyCode = $user->family_code;
-            $validated['patient_id'] = $user->id;       // المريض نفسه
+            $validated['patient_id'] = $user->id;       // assign self as patient
         }
 
         $validated['family_code'] = $familyCode;
 
         Appointment::create($validated);
 
+        // Redirect based on role
         if ($user->role === 'caregiver') {
-            // ارجع لصفحة مواعيد المريض مع تمرير patient_id عشان تعرض مواعيده
             return redirect()->route('appointments.index', ['patient_id' => $patient->id])
                              ->with('success', 'Appointment created successfully.');
         } else {
-            // ارجع للصفحة العامة للمريض (مواعيده)
             return redirect()->route('appointments.index')
                              ->with('success', 'Appointment created successfully.');
         }
     }
 
+    // Show appointments for a specific patient (for caregivers or authorized users)
     public function showPatientAppointments(User $patient)
     {
         $user = auth()->user();
 
         if ($user->role === 'caregiver') {
-            // تحقق إذا المتابع مربوط بالمريض
+            // Verify caregiver linked to this patient
             $isLinked = \DB::table('patient_caregiver')
                 ->where('caregiver_id', $user->id)
                 ->where('patient_id', $patient->id)
@@ -118,7 +129,7 @@ class AppointmentController extends Controller
                 abort(403, 'Unauthorized access');
             }
         } else {
-            // لو مريض، تأكد انه نفس المريض أو من نفس العائلة
+            // For patients, verify family code matches
             if ($patient->family_code !== $user->family_code) {
                 abort(403, 'Unauthorized access');
             }
@@ -129,6 +140,7 @@ class AppointmentController extends Controller
         return view('appointments.index', compact('appointments', 'patient'));
     }
 
+    // Update an existing appointment
     public function update(Request $request, Appointment $appointment)
     {
         $user = auth()->user();
@@ -140,6 +152,7 @@ class AppointmentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        // Authorization check: caregiver linked to patient or patient owns appointment
         if ($user->role === 'caregiver') {
             if (!$user->patients()->where('users.id', $appointment->patient_id)->exists()) {
                 abort(403, 'Unauthorized');
@@ -155,10 +168,12 @@ class AppointmentController extends Controller
         return redirect()->back()->with('success', 'Appointment updated successfully.');
     }
 
+    // Delete an appointment
     public function destroy(Appointment $appointment)
     {
         $user = auth()->user();
 
+        // Authorization check before deletion
         if ($user->role === 'caregiver') {
             if (!$user->patients()->where('users.id', $appointment->patient_id)->exists()) {
                 abort(403, 'Unauthorized');

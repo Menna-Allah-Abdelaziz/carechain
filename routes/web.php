@@ -16,56 +16,61 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// تسجيل الدخول والخروج
+// Login and Logout
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// صفحة اختيار نوع التسجيل
+// Registration choice page
 Route::get('/register', function () {
     return view('auth.register_choice');
 })->name('register_choice');
 
-// تسجيل مريض
+// Patient registration
 Route::get('/register/patient', [RegisterController::class, 'showPatientRegistrationForm'])->name('register.patient');
 Route::post('/register/patient', [RegisterController::class, 'storePatient'])->name('register.patient.store');
 
-// تسجيل متابع
+// Caregiver registration
 Route::get('/register/caregiver', [RegisterController::class, 'showCaregiverRegistrationForm'])->name('register.caregiver');
 Route::post('/register/caregiver', [RegisterController::class, 'storeCaregiver'])->name('register.caregiver.store');
 
-
-// روتات محمية تتطلب تسجيل دخول
+// Protected routes - require authentication
 Route::middleware(['auth'])->group(function () {
 
-    // الداشبورد الخاص بالمريض الحالي
+    // Family dashboard (notes)
     Route::get('/family/dashboard', [NoteController::class, 'index'])->name('family.dashboard');
 
-    // ملاحظات مريض معين (للمتابع)
+    // Notes for a specific patient (for caregiver)
     Route::get('/family/dashboard/{patient}', [NoteController::class, 'showPatientNotes'])->name('family.dashboard.patient');
 
-    // الملاحظات
+    // Notes CRUD
     Route::post('/notes/{patient}', [NoteController::class, 'store'])->name('notes.store');
     Route::delete('/notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
-    // المتابعين والمرضى
+    // Caregiver patients management
     Route::get('/caregiver_patients', [CaregiverController::class, 'index'])->name('caregiver_patients');
     Route::post('/caregiver_patients/add', [CaregiverController::class, 'addPatientByFamilyCode'])->name('caregiver_patients.add');
     Route::get('/caregiver_patients/{patientId}/notes', [NoteController::class, 'index'])->name('caregiver_patient.notes');
 
-    // الأدوية
+    // Medications
     Route::get('/family/medications', [MedicationController::class, 'index'])->name('medications.index');
     Route::post('/family/medications', [MedicationController::class, 'store'])->name('medications.store');
     Route::put('/family/medications/{medication}', [MedicationController::class, 'update'])->name('medications.update');
-    Route::delete('/medications/{medication}', [MedicationController::class, 'destroy'])->name('medications.destroy');
+    Route::delete('/family/medications/{medication}', [MedicationController::class, 'destroy'])->name('medications.destroy');
 
-    // الملفات الطبية
-    Route::get('/medical-files', [MedicalFileController::class, 'index'])->name('medical-files.index');
-    Route::get('/medical-files/create', [MedicalFileController::class, 'create'])->name('medical_files.create');
-    Route::post('/medical-files/store', [MedicalFileController::class, 'store'])->name('medical_files.store');
-    Route::delete('/medical_files/{id}', [MedicalFileController::class, 'destroy'])->name('medical_files.destroy');
+    // Medical Files
+    Route::get('/patients/{patient}/medical_files', [MedicalFileController::class, 'index'])->name('medical_files.index');
+    Route::get('/patients/{patient}/medical_files/create', [MedicalFileController::class, 'create'])->name('medical_files.create');
+    Route::post('/patients/{patient}/medical_files', [MedicalFileController::class, 'store'])->name('medical_files.store');
+    Route::get('/medical_files/{medical_file}', [MedicalFileController::class, 'show'])->name('medical_files.show');
+    Route::get('/medical_files/{medical_file}/edit', [MedicalFileController::class, 'edit'])->name('medical_files.edit');
+    Route::put('/medical_files/{medical_file}', [MedicalFileController::class, 'update'])->name('medical_files.update');
+    Route::delete('/medical_files/{medical_file}', [MedicalFileController::class, 'destroy'])->name('medical_files.destroy');
+    
+    // Optional: show medical files by family code (if needed)
+    Route::get('/medical_files/{familyCode}', [MedicalFileController::class, 'showMedicalFiles']);
 
-    // المواعيد
+    // Appointments
     Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
     Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
@@ -75,10 +80,9 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
-// حفظ توكن FCM لجهاز المستخدم
+// Save FCM token for authenticated user
 Route::post('/save-fcm-token', function (Request $request) {
     $request->validate(['token' => 'required|string']);
-
     $user = Auth::user();
     if ($user) {
         $user->fcm_token = $request->token;
@@ -88,7 +92,7 @@ Route::post('/save-fcm-token', function (Request $request) {
     return response()->json(['message' => 'Unauthorized'], 401);
 })->middleware('auth');
 
-// إرسال إشعار
+// Send notification
 Route::post('/send-notification', [NotificationController::class, 'sendNotification']);
 Route::get('/send-notification', function () {
     return "Please send a POST request to this URL with the device token to trigger notification.";
