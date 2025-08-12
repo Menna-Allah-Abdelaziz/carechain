@@ -3,28 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Medication;
-use App\Models\User;  // تأكدي من إضافة هذا السطر
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MedicationController extends Controller
 {
     public function index(Request $request)
-{
-    if (auth()->user()->role === 'caregiver' && $request->patient_id) {
-        $patient = User::findOrFail($request->patient_id);
-        $familyCode = $patient->family_code;
-    } else {
-        $patient = auth()->user();  // هذا لصفحة المريض نفسه
-        $familyCode = $patient->family_code;
+    {
+        if (auth()->user()->role === 'caregiver' && $request->patient_id) {
+            $patient = User::findOrFail($request->patient_id);
+            $familyCode = $patient->family_code;
+        } else {
+            $patient = auth()->user();
+            $familyCode = $patient->family_code;
+        }
+
+        $medications = Medication::where('family_code', $familyCode)->get();
+
+        return view('family.medications', compact('medications', 'patient'));
     }
 
-    $medications = Medication::where('family_code', $familyCode)->get();
-
-    return view('family.medications', compact('medications', 'patient'));
-}
-
-
-    // تخزين الدواء (يدعم إضافة دواء لمريض محدد أو لنفس المستخدم)
     public function store(Request $request)
     {
         $request->validate([
@@ -57,44 +55,42 @@ class MedicationController extends Controller
 
         return redirect()->back()->with('success', 'Medication added successfully.');
     }
+
     public function update(Request $request, Medication $medication)
-{
-    $request->validate([
-        'name' => 'required|string',
-        'dosage' => 'required|string',
-        'quantity' => 'required|integer|min:1',
-        'times_per_day' => 'required|integer|min:1',
-        'first_dose_time' => 'required|date_format:H:i',
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'dosage' => 'required|string',
+            'quantity' => 'required|integer|min:1',
+            'times_per_day' => 'required|integer|min:1',
+            'first_dose_time' => 'required|date_format:H:i',
+        ]);
 
-    // تحقق من صلاحية المستخدم (المريض نفسه أو متابع لنفس العائلة)
-    if (auth()->user()->family_code !== $medication->family_code) {
-        abort(403, 'Unauthorized action.');
+        // تحقق من صلاحية المستخدم (يجب أن يكون من نفس العائلة)
+        if (auth()->user()->family_code !== $medication->family_code) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $medication->update([
+            'name' => $request->name,
+            'dosage' => $request->dosage,
+            'quantity' => $request->quantity,
+            'times_per_day' => $request->times_per_day,
+            'first_dose_time' => $request->first_dose_time,
+        ]);
+
+        return redirect()->back()->with('success', 'Medication updated successfully.');
     }
 
-    $medication->update([
-        'name' => $request->name,
-        'dosage' => $request->dosage,
-        'quantity' => $request->quantity,
-        'times_per_day' => $request->times_per_day,
-        'first_dose_time' => $request->first_dose_time,
-    ]);
+    public function destroy(Medication $medication)
+    {
+        // تحقق من صلاحية المستخدم (يجب أن يكون من نفس العائلة)
+        if (auth()->user()->family_code !== $medication->family_code) {
+            abort(403, 'Unauthorized action.');
+        }
 
-    return redirect()->back()->with('success', 'Medication updated successfully.');
-}
+        $medication->delete();
 
-public function destroy(Medication $medication)
-{
-    // تحقق من صلاحية المستخدم
-    if (auth()->user()->family_code !== $medication->family_code) {
-        abort(403, 'Unauthorized action.');
+        return redirect()->back()->with('success', 'Medication deleted successfully.');
     }
-
-    $medication->delete();
-
-    return redirect()->back()->with('success', 'Medication deleted successfully.');
 }
-
-}
-
-

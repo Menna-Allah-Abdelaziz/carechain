@@ -11,23 +11,28 @@ class Appointment extends Model
 
     protected $table = 'appointments';
 
-    
-protected $fillable = [
+    protected $fillable = [
         'doctor_name',
         'family_code',
-        'patient_id',       // جديد
+        'patient_id',
         'appointment_time',
         'location',
         'notes',
     ];
 
+    protected $casts = [
+        'appointment_time' => 'datetime',
+    ];
+
+    // علاقة الميعاد بالمريض (user)
     public function patient()
     {
         return $this->belongsTo(User::class, 'patient_id');
     }
-    public function user()
-    {
-                return $this->belongsTo(User::class, 'family_code', 'family_code');
-    }
 
+    // علاقة لجلب كل المستخدمين بنفس family_code (علاقة hasMany)
+    public function users()
+    {
+        return $this->hasMany(User::class, 'family_code', 'family_code');
+    }
 }

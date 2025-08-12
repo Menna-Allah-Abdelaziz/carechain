@@ -1,77 +1,76 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Appointments</h1>
+<div class="container col-md-8 mt-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Appointments</h4>
 
-@if(isset($patient) && $patient)
-    <a href="{{ route('appointments.create', ['patient_id' => $patient->id]) }}" class="btn btn-success">
-       Add Appointment For  {{ $patient->name }}
-    </a>
-@else
-    <a href="{{ route('appointments.create') }}" class="btn btn-success">
-        Add Appointment
-    </a>
-@endif
+      @if(isset($patient) && $patient)
+        <a href="{{ route('appointments.create', ['patient_id' => $patient->id]) }}" 
+           class="btn btn-success">
+           Add Appointment For {{ $patient->name }}
+        </a>
+      @else
+        <a href="{{ route('appointments.create') }}" class="btn btn-success">
+          Add Appointment
+        </a>
+      @endif
 
-<style>
-
-    .btn-custom-white {
-  background-color: white;
-  color: #0d6efd; /* أزرق Bootstrap */
-  border: 2px solid #0d6efd;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.btn-custom-white:hover {
-  background-color: #0d6efd;
-  color: white;
-}
-</style>
-
-    @if($appointments->isEmpty())
-        <p>No appointments found.</p>
-    @else
-    <table class="table table-bordered" id="appointments-table">
-        <thead>
+    </div>
+    <div class="card-body p-0">
+      @if($appointments->isEmpty())
+          <p class="p-3">No appointments found.</p>
+      @else
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0" id="appointments-table">
+          <thead class="table-light">
             <tr>
-                <th>Doctor Name</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Location</th>
-                <th>Notes</th>
-                <th style="width: 140px;">Actions</th>
+              <th>Doctor Name</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Location</th>
+              <th>Notes</th>
+              <th style="width: 140px;">Actions</th>
             </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
             @foreach($appointments as $appointment)
-                <tr data-id="{{ $appointment->id }}">
-                    <td class="text">{{ $appointment->doctor_name }}</td>
-                    <td class="text">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('Y-m-d') }}</td>
-                    <td class="text">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i') }}</td>
-                    <td class="text">{{ $appointment->location }}</td>
-                    <td class="text">{{ $appointment->notes }}</td>
-                    <td class="actions">
-                        <div style="display:flex; gap: 6px; justify-content: center;">
-                            <button class="btn btn-sm btn-warning btn-edit" style="min-width: 60px;">Edit</button>
+              <tr data-id="{{ $appointment->id }}">
+                <td class="text">{{ $appointment->doctor_name }}</td>
+                <td class="text">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('Y-m-d') }}</td>
+                <td class="text">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('H:i') }}</td>
+                <td class="text">{{ $appointment->location ?? '-' }}</td>
+                <td class="text" style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $appointment->notes ?? 'No notes' }}">
+                  {{ $appointment->notes ?? '-' }}
+                </td>
+                <td class="actions">
+                  <div style="display:flex; gap: 6px; justify-content: center;">
+                    {{-- زر تعديل --}}
+                    <button class="btn btn-sm btn-warning btn-edit" style="min-width: 60px;">Edit</button>
 
-                            <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا الموعد؟');" style="margin:0;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger" style="min-width: 60px;">Delete</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+                    {{-- زر حذف --}}
+                    <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا الموعد؟');" style="margin:0;">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit" class="btn btn-sm btn-danger" style="min-width: 60px;">Delete</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
             @endforeach
-        </tbody>
-    </table>
-    @endif
+          </tbody>
+        </table>
+      </div>
+      @endif
+    </div>
+  </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const table = document.getElementById('appointments-table');
+    if (!table) return;  // لو مفيش جدول، خروج من السكريبت عشان ما يطالعش خطأ
 
     table.addEventListener('click', function (e) {
         if (e.target.classList.contains('btn-edit')) {

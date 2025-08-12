@@ -3,31 +3,34 @@
 @section('content')
 <div class="container py-5">
     <!-- Patient Info -->
-    <div class=" border-0  mb-5">
+    <div class="border-0 mb-5">
         <div class="card-body d-flex align-items-center gap-5" style="font-size: 2rem;">
             <div>
                 <span class="text-end">{{ $patient->name }}</span>
             </div>
-           
             <div>
-                @if($patient->family_code)
-                    <code class="text-black  " style="margin-right: 400px">{{ $patient->family_code }}</code>
-                @else
-                    <span class="text-success">Not Assigned</span>
-                @endif
+    @if($patient->family_code)
+        <code class="text-black d-inline-block" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            {{ $patient->family_code }}
+        </code>
+    @else
+        <span class="text-success">Not Assigned</span>
+    @endif
+</div>
+
+            @if(auth()->user()->role === 'caregiver')
+            <div class="d-flex gap-3 mt-4">
+                <div class="d-flex gap-3 mt-4">
+    <a href="{{ route('medications.index', ['patient_id' => $patient->id]) }}" class="btn btn-primary px-3 py-2 fs-5">
+       Medications
+    </a>
+    <a href="{{ route('appointments.index', ['patient_id' => $patient->id]) }}" class="btn btn-secondary px-3 py-2 fs-5">
+        Appointments
+    </a>
+</div>
+
             </div>
-@if(auth()->user()->role === 'caregiver')
-    <div class="d-flex gap-3 mt-4">
-        <a href="{{ route('medications.index', ['patient_id' => $patient->id]) }}" class="btn btn-primary mx-3 px-4 py-2 fs-5">
-           Medications
-        </a>
-        <!-- زرار المواعيد -->
-<a href="{{ route('appointments.index', ['patient_id' => $patient->id]) }}" class="btn btn-secondary mx-3 px-4 py-2 fs-5">
-    Appointments
-  </a>
-    </div>
-   
-@endif
+            @endif
         </div>
     </div>
 
@@ -49,8 +52,7 @@
             @endif
 
             <!-- Add Note Form -->
-<form action="{{ route('notes.store', $patient->id) }}" method="POST">
-
+            <form action="{{ route('notes.store', $patient->id) }}" method="POST">
                 @csrf
                 <input type="hidden" name="patient_id" value="{{ $patient->id }}">
                 <div class="mb-3">
@@ -62,38 +64,28 @@
                 </button>
             </form>
 
-@if($notes->count())
-    <ul>
-        @foreach($notes as $note)
-            <li style="margin:10px">
-                <strong>{{ $note->user->name }}</strong>: {{ $note->content }}
-                <small>{{ $note->created_at->format('Y-m-d H:i') }}</small>
-            </li>
-        @endforeach
-    </ul>
-@else
-    <p>No notes found.</p>
-@endif
-
-
-<!--
-            
             @if(isset($notes) && $notes->count())
                 <ul class="list-group">
                     @foreach($notes as $note)
-                        <li class="list-group-item">
-                            <strong>{{ $note->user->name }}</strong>: {{ $note->content }}
-                            <div class="text-muted small">
-                                Created: {{ $note->created_at->format('Y-m-d H:i') }}
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>{{ $note->user->name }}</strong>: {{ $note->content }}
+                                <div class="text-muted small mt-1">
+                                    Created: {{ $note->created_at->format('Y-m-d H:i') }}
+                                </div>
                             </div>
+                            <form action="{{ route('notes.destroy', $note->id) }}" method="POST" class="ms-3" onsubmit="return confirm('Are you sure you want to delete this note?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-primary">Delete</button>
+                            </form>
                         </li>
                     @endforeach
                 </ul>
             @else
                 <p class="text-muted">No notes yet.</p>
-            @endif  -->
+            @endif
         </div>
     </div>
-
 </div>
 @endsection

@@ -1,7 +1,6 @@
 <?php
 
-
-   namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
 use App\Models\Note;
 use App\Models\User;
@@ -11,28 +10,28 @@ use Illuminate\Support\Facades\Auth;
 class NoteController extends Controller
 {
     public function index($patientId = null)
-{
-    $patient = null;
+    {
+        $patient = null;
 
-    if (Auth::user()->role === 'patient') {
-        $patient = Auth::user();
-        $familyCode = $patient->family_code;
-    } elseif ($patientId) {
-        $patient = User::where('id', $patientId)
-            ->where('role', 'patient')
-            ->firstOrFail();
-        $familyCode = $patient->family_code;
-    } else {
-        $familyCode = Auth::user()->family_code;
+        if (Auth::user()->role === 'patient') {
+            $patient = Auth::user();
+            $familyCode = $patient->family_code;
+        } elseif ($patientId) {
+            $patient = User::where('id', $patientId)
+                ->where('role', 'patient')
+                ->firstOrFail();
+            $familyCode = $patient->family_code;
+        } else {
+            $familyCode = Auth::user()->family_code;
+        }
+
+        $notes = Note::with('user')
+            ->where('family_code', $familyCode)
+            ->latest()
+            ->get();
+
+        return view('family.dashboard', compact('notes', 'patient', 'patientId'));
     }
-
-    $notes = Note::where('family_code', $familyCode)
-        ->latest()
-        ->get();
-
-    return view('family.dashboard', compact('notes', 'patient', 'patientId'));
-}
-
 
     public function store(Request $request, $patientId = null)
     {
@@ -44,7 +43,6 @@ class NoteController extends Controller
             $patient = User::where('id', $patientId)
                 ->where('role', 'patient')
                 ->firstOrFail();
-
             $familyCode = $patient->family_code;
         } else {
             $familyCode = Auth::user()->family_code;
@@ -59,30 +57,32 @@ class NoteController extends Controller
         return back()->with('success', 'Note added successfully.');
     }
 
+    public function showPatientNotes($patientId)
+    {
+        $patient = User::where('id', $patientId)
+            ->where('role', 'patient')
+            ->firstOrFail();
 
+        $notes = Note::where('family_code', $patient->family_code)
+            ->latest()
+            ->get();
 
+        return view('family.dashboard', compact('patient', 'notes'));
+    }
 
-public function showPatientNotes($patientId)
-{
-    $patient = \App\Models\User::where('id', $patientId)
-        ->where('role', 'patient')
-        ->firstOrFail();
+    public function medications()
+    {
+        return view('family.medications');
+    }
 
-    $notes = Note::where('family_code', $patient->family_code)
-             ->latest()
-             ->get();
+    public function destroy(Note $note)
+    {
+        if ($note->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
 
+        $note->delete();
 
-    return view('family.dashboard', compact('patient', 'notes'));
+        return redirect()->back()->with('success', 'Note deleted successfully.');
+    }
 }
-
-
-public function medications()
-{
-    return view('family.medications');
-}
-
-
-}
-
-?>
