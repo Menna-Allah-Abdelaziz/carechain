@@ -75,13 +75,16 @@
                         @auth
                             @if(auth()->user()->role === 'patient')
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('family.dashboard') }}">NOTES</a>
+                                <a class="nav-link" href="{{ route('family.dashboard') }}">Notes</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('medications.index') }}">Medications</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('appointments.index') }}">Appointments</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{route('medical_files.create')}}">Medical Files</a>
                             </li>
                             @elseif(auth()->user()->role === 'caregiver')
                             <li class="nav-item">

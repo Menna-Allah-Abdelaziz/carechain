@@ -289,4 +289,4 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 @endsection
-C:\Users\hp\OneDrive\Desktop\carechain\resources\views
+C:\Users\hp\OneDrive\Desktop\carechain\database/migrations

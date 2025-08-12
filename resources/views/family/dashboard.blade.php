@@ -2,52 +2,34 @@
 
 @section('content')
 <div class="container py-5">
-
     <!-- Patient Info -->
-    <div class="card shadow-sm border-0 mb-5">
-        <div class="card-body d-flex align-items-center gap-5" style="font-size: 1.8rem;">
+    <div class=" border-0  mb-5">
+        <div class="card-body d-flex align-items-center gap-5" style="font-size: 2rem;">
             <div>
-                <span class="text-success">{{ $patient->name }}</span>
+                <span class="text-end">{{ $patient->name }}</span>
             </div>
-            <div>
-                {{ ucfirst($patient->role) }}
-            </div>
+           
             <div>
                 @if($patient->family_code)
-                    <code>{{ $patient->family_code }}</code>
+                    <code class="text-black  " style="margin-right: 400px">{{ $patient->family_code }}</code>
                 @else
-                    <span class="text-danger">Not Assigned</span>
+                    <span class="text-success">Not Assigned</span>
                 @endif
             </div>
-        </div>
-    </div>
-
-
-
-
-
 @if(auth()->user()->role === 'caregiver')
     <div class="d-flex gap-3 mt-4">
-        <a href="{{ route('medications.index', ['patient_id' => $patient->id]) }}" class="btn btn-primary">
-            عرض الأدوية
+        <a href="{{ route('medications.index', ['patient_id' => $patient->id]) }}" class="btn btn-primary mx-3 px-4 py-2 fs-5">
+           Medications
         </a>
         <!-- زرار المواعيد -->
-    <a href="{{ route('appointments.patient.index', $patient->id) }}">عرض مواعيد {{ $patient->name }}</a>
-
-
-    </div>
-@endif
-
-@if(auth()->user()->role === 'caregiver' && isset($patient))
-  <a href="{{ route('appointments.index', ['patient_id' => $patient->id]) }}" class="btn btn-info">
+<a href="{{ route('appointments.index', ['patient_id' => $patient->id]) }}" class="btn btn-secondary mx-3 px-4 py-2 fs-5">
     Appointments
   </a>
-
+    </div>
+   
 @endif
-
-
-
-
+        </div>
+    </div>
 
     <!-- Dashboard Title -->
     <div class="text-center mb-4">
@@ -75,7 +57,7 @@
                     <label for="note" class="form-label">Write a Note</label>
                     <textarea name="content" id="note" class="form-control" rows="3" required placeholder="Type your message here..."></textarea>
                 </div>
-                <button type="submit" class="btn btn-success">
+                <button type="submit" class="btn btn-primary mx-3 px-4 py-2 fs-5" style="margin: 30px">
                     <i class="bi bi-plus-circle"></i> Add Note
                 </button>
             </form>
@@ -83,7 +65,7 @@
 @if($notes->count())
     <ul>
         @foreach($notes as $note)
-            <li>
+            <li style="margin:10px">
                 <strong>{{ $note->user->name }}</strong>: {{ $note->content }}
                 <small>{{ $note->created_at->format('Y-m-d H:i') }}</small>
             </li>

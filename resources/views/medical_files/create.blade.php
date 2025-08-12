@@ -54,6 +54,8 @@
                 </div>
             @endforeach
         </div>
+    @else 
+    <h3>no files</h3>
     @endif
 </div>
 @endsection

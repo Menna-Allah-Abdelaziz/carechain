@@ -31,12 +31,7 @@ Route::post('/register/patient', [RegisterController::class, 'storePatient'])->n
 Route::get('/register/caregiver', [RegisterController::class, 'showCaregiverRegistrationForm'])->name('register.caregiver');
 Route::post('/register/caregiver', [RegisterController::class, 'storeCaregiver'])->name('register.caregiver.store');
 
-// روتات المتابع (Caregiver)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/caregiver_patients', [CaregiverController::class, 'index'])->name('caregiver_patients');
-    Route::post('/caregiver_patients/add', [CaregiverController::class, 'addPatientByFamilyCode'])->name('caregiver_patients.add');
-    Route::get('/caregiver_patients/{patientId}/notes', [NoteController::class, 'index'])->name('caregiver_patient.notes');
-});
+
 
 // روتات المريض (Patient)
 Route::middleware(['auth'])->group(function () {
@@ -48,7 +43,9 @@ Route::middleware(['auth'])->group(function () {
   
     // الملاحظات
     Route::post('/notes/{patient}', [NoteController::class, 'store'])->name('notes.store');
-
+    Route::get('/caregiver_patients', [CaregiverController::class, 'index'])->name('caregiver_patients');
+    Route::post('/caregiver_patients/add', [CaregiverController::class, 'addPatientByFamilyCode'])->name('caregiver_patients.add');
+    Route::get('/caregiver_patients/{patientId}/notes', [NoteController::class, 'index'])->name('caregiver_patient.notes');
 
     // الأدوية
     Route::get('/family/medications', [MedicationController::class, 'index'])->name('medications.index');
@@ -57,28 +54,14 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/medications/store', [MedicationController::class, 'store'])
     ->name('medications.store');
 
-    Route::middleware(['auth'])->group(function () {
-    // تعديل دواء - عادة PATCH أو PUT
     Route::put('/family/medications/{medication}', [MedicationController::class, 'update'])->name('medications.update');
 
-    // حذف دواء
     Route::delete('/family/medications/{medication}', [MedicationController::class, 'destroy'])->name('medications.destroy');
-});
 
-// المتابع يضيف دواء لمريض محدد
-//Route::post('/medications/store/{patientId}', [MedicationController::class, 'store'])
-//    ->name('medications.store.forPatient');
 
-//Route::post('/family/medications/{patient}', [MedicationController::class, 'store'])->name('medications.store');
-
-    // الملفات الطبية
     Route::get('/medical-files', [MedicalFileController::class, 'index'])->name('medical-files.index');
     Route::get('/medical-files/create', [MedicalFileController::class, 'create'])->name('medical_files.create');
     Route::post('/medical-files/store', [MedicalFileController::class, 'store'])->name('medical_files.store');
-
-    // المواعيد
-// routes/web.php
-
 
     Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
     Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
